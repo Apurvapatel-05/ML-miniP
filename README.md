@@ -4,8 +4,9 @@ Predict the **mood of a song** — Happy, Sad, Calm, or Energetic — from its a
 features, using a **Random Forest Classifier** and an interactive **Streamlit**
 web app. Built as an end-to-end, portfolio-quality machine-learning project.
 
-<!-- Replace the badge/live URL below once deployed (see Live Demo). -->
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-B14BF4?logo=streamlit&logoColor=white)](https://YOUR-APP-URL.streamlit.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-B14BF4?logo=streamlit&logoColor=white)](https://ml-minip-ez2gz7r4jtn6wsglxehbec.streamlit.app/)
+
+**🔗 Live app:** https://ml-minip-ez2gz7r4jtn6wsglxehbec.streamlit.app/
 
 ---
 
@@ -103,7 +104,7 @@ flowchart TD
 | 6 | Production readiness | ✅ Done |
 | 7 | GitHub repository setup | ✅ Done |
 | 8 | Professional README | ✅ Done |
-| 9 | Public deployment (live URL) | 🚧 Pending accounts |
+| 9 | Public deployment (live URL) | ✅ Done |
 
 ## 📁 Project Structure
 
@@ -203,12 +204,12 @@ Confusion matrix and feature importance plots are saved in
 
 ## 🌐 Live Demo
 
-> **Live app URL:** _to be added after deployment_ → `https://YOUR-APP-URL.streamlit.app`
+**▶️ Try it live:** https://ml-minip-ez2gz7r4jtn6wsglxehbec.streamlit.app/
 
-Deployment instructions are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
-The preferred host is **Streamlit Community Cloud**, with **Render** as an
-alternative. Once deployed, the public URL is recorded here and in the badge at
-the top.
+The app is deployed on **Streamlit Community Cloud** and loads the trained model
+directly, so predictions work instantly. Deployment instructions (Streamlit
+Cloud preferred, Render alternative) are in
+[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ## 🔮 Future Enhancements
 

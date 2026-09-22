@@ -47,7 +47,9 @@ file ingestion / feature extraction from raw audio, and user accounts.
 | 6 | Production readiness (logging, validation, deps) | ✅ Done |
 | 7 | GitHub repository setup | ✅ Done |
 | 8 | Professional README | ✅ Done |
-| 9 | Public deployment (live URL) | 🚧 Pending accounts |
+| 9 | Public deployment (live URL) | ✅ Done |
+
+**Live app:** https://ml-minip-ez2gz7r4jtn6wsglxehbec.streamlit.app/
 
 ## Environment Setup
 
