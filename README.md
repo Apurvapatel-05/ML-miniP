@@ -196,11 +196,9 @@ Confusion matrix and feature importance plots are saved in
 
 ## 🖼️ Screenshots
 
-| Home | Prediction | Analytics |
-|------|-----------|-----------|
-| ![Home Page](docs/screenshots/home.png) | ![Prediction Page](docs/screenshots/prediction.png) | ![Analytics Dashboard](docs/screenshots/analytics.png) |
-
-> _Placeholders — add screenshots to `docs/screenshots/` after running the app._
+| Home | Prediction |
+|------|-----------|
+| ![Home Page](docs/screenshots/home.png) | ![Prediction Page](docs/screenshots/prediction.png) |
 
 ## 🌐 Live Demo
 
