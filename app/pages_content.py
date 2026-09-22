@@ -31,6 +31,14 @@ MOOD_COLORS: dict[str, str] = {
     "Energetic": "#F44B9E",
 }
 
+# Per-mood emoji used in the result reveal for a friendlier, more vivid UI.
+MOOD_EMOJI: dict[str, str] = {
+    "Happy": "😄",
+    "Sad": "😢",
+    "Calm": "😌",
+    "Energetic": "⚡",
+}
+
 # Friendly help text and default values for each feature input.
 FEATURE_HELP: dict[str, str] = {
     "danceability": "How suitable the track is for dancing (0-1).",
@@ -60,60 +68,203 @@ def inject_theme() -> None:
     st.markdown(
         """
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+        /* Animated aurora background */
         .stApp {
             background:
-                radial-gradient(1200px 600px at 15% -10%, rgba(123,47,247,0.28), transparent 60%),
-                radial-gradient(1000px 500px at 110% 10%, rgba(224,82,160,0.22), transparent 55%),
-                linear-gradient(160deg, #0B0B0F 0%, #141018 100%);
+                radial-gradient(1100px 600px at 12% -12%, rgba(123,47,247,0.32), transparent 60%),
+                radial-gradient(1000px 520px at 112% 8%, rgba(224,82,160,0.26), transparent 55%),
+                radial-gradient(900px 500px at 50% 120%, rgba(75,224,198,0.14), transparent 55%),
+                linear-gradient(160deg, #08070C 0%, #120E1A 55%, #0B0910 100%);
+            background-attachment: fixed;
         }
+        .stApp::before {
+            content: "";
+            position: fixed;
+            inset: -20%;
+            z-index: -1;
+            background:
+                radial-gradient(600px 600px at 20% 30%, rgba(123,47,247,0.20), transparent 60%),
+                radial-gradient(600px 600px at 80% 70%, rgba(224,82,160,0.18), transparent 60%);
+            filter: blur(40px);
+            animation: drift 18s ease-in-out infinite alternate;
+        }
+        @keyframes drift {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-4%, 4%) scale(1.12); }
+        }
+
+        html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+
         .glass-card {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 22px;
-            padding: 26px 30px;
+            background: rgba(255, 255, 255, 0.055);
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 24px;
+            padding: 28px 32px;
             margin-bottom: 22px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45),
+                        inset 0 1px 0 rgba(255,255,255,0.08);
+            position: relative;
+            overflow: hidden;
         }
+        /* Subtle top sheen on cards */
+        .glass-card::after {
+            content: "";
+            position: absolute;
+            top: 0; left: -30%;
+            width: 60%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.06), transparent);
+            transform: skewX(-20deg);
+        }
+
         .hero-title {
-            font-size: 2.6rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #B14BF4, #E052A0);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.9rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #9B6BFF 0%, #E052A0 50%, #4BE0C6 100%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 0.2rem;
+            animation: shimmer 6s linear infinite;
+            margin-bottom: 0.35rem;
         }
-        .subtle { color: rgba(245,243,250,0.72); }
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+        .subtle { color: rgba(245,243,250,0.74); line-height: 1.6; }
+
+        h3, h4 { font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.2px; }
+
+        /* Glowing hero orb (spinning conic gradient with a glass core) */
+        .orb-wrap { display: flex; justify-content: center; margin: 8px 0 4px; }
+        .orb {
+            width: 150px; height: 150px; border-radius: 50%;
+            background: conic-gradient(from 0deg, #7B2FF7, #E052A0, #4BE0C6, #7B2FF7);
+            animation: spin 7s linear infinite;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 50px rgba(176,75,244,0.55), 0 0 90px rgba(224,82,160,0.35);
+        }
+        .orb-core {
+            width: 116px; height: 116px; border-radius: 50%;
+            background: rgba(10,8,16,0.82);
+            backdrop-filter: blur(8px);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         .mood-pill {
             display: inline-block;
-            padding: 8px 18px;
+            padding: 9px 20px;
             margin: 6px 8px 6px 0;
             border-radius: 999px;
             border: 1px solid rgba(255,255,255,0.18);
             background: rgba(255,255,255,0.05);
             font-weight: 600;
+            transition: transform 0.15s ease, box-shadow 0.2s ease;
         }
+        .mood-pill:hover { transform: translateY(-2px); }
+
         .result-mood {
-            font-size: 2.4rem;
-            font-weight: 800;
-            margin: 0.2rem 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0.15rem 0;
+            letter-spacing: 0.5px;
         }
+        .result-card { animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(14px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .conf-track {
+            width: 100%; height: 12px; border-radius: 999px;
+            background: rgba(255,255,255,0.10); overflow: hidden; margin: 10px 0 4px;
+        }
+        .conf-fill {
+            height: 100%; border-radius: 999px;
+            animation: grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        @keyframes grow { from { width: 0; } }
+
+        /* Buttons */
         div.stButton > button {
             background: linear-gradient(90deg, #7B2FF7, #E052A0);
             color: white;
             border: none;
             border-radius: 999px;
-            padding: 0.6rem 2.2rem;
+            padding: 0.7rem 2.4rem;
             font-weight: 700;
-            box-shadow: 0 4px 20px rgba(176,75,244,0.45);
-            transition: transform 0.05s ease, box-shadow 0.2s ease;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.4px;
+            box-shadow: 0 6px 24px rgba(176,75,244,0.5);
+            transition: transform 0.06s ease, box-shadow 0.25s ease, filter 0.2s ease;
         }
         div.stButton > button:hover {
-            box-shadow: 0 6px 28px rgba(224,82,160,0.6);
-            transform: translateY(-1px);
+            box-shadow: 0 10px 34px rgba(224,82,160,0.7);
+            transform: translateY(-2px);
+            filter: brightness(1.08);
+        }
+        div.stButton > button:active { transform: translateY(0); }
+
+        /* Inputs */
+        div[data-testid="stNumberInput"] input {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #F5F3FA;
+        }
+        div[data-testid="stNumberInput"] input:focus {
+            border-color: #B14BF4;
+            box-shadow: 0 0 0 2px rgba(176,75,244,0.35);
+        }
+
+        /* Metric tiles */
+        div[data-testid="stMetric"] {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: 0 6px 22px rgba(0,0,0,0.30);
+        }
+        div[data-testid="stMetricValue"] {
+            background: linear-gradient(90deg, #B14BF4, #E052A0);
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            background: linear-gradient(180deg, rgba(20,16,26,0.9), rgba(11,9,16,0.9));
+            border-right: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* Floating music notes */
+        .note {
+            position: fixed; bottom: -40px; color: rgba(255,255,255,0.12);
+            font-size: 1.5rem; z-index: -1; animation: float 14s linear infinite;
+        }
+        .note.n1 { left: 8%;  animation-delay: 0s;  }
+        .note.n2 { left: 30%; animation-delay: 4s;  font-size: 1.1rem; }
+        .note.n3 { left: 62%; animation-delay: 2s;  font-size: 2rem; }
+        .note.n4 { left: 85%; animation-delay: 7s;  }
+        @keyframes float {
+            0%   { transform: translateY(0) rotate(0);   opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(40deg); opacity: 0; }
         }
         </style>
+        <div class="note n1">♪</div>
+        <div class="note n2">♫</div>
+        <div class="note n3">♩</div>
+        <div class="note n4">♬</div>
         """,
         unsafe_allow_html=True,
     )
@@ -127,16 +278,19 @@ def _card(html: str) -> None:
 def render_home() -> None:
     """Render the Home page: project intro and the four mood classes (Req 8)."""
     _card(
-        '<div class="hero-title">🎵 Music Mood Predictor</div>'
-        '<p class="subtle">Predict the mood of a song from its audio features '
-        "using a Random Forest machine-learning model. Enter a track's "
-        "characteristics and instantly see whether it feels Happy, Sad, Calm, "
-        "or Energetic — along with a confidence score and insights.</p>"
+        '<div class="orb-wrap"><div class="orb"><div class="orb-core">🎧</div></div></div>'
+        '<div class="hero-title" style="text-align:center;">Music Mood Predictor</div>'
+        '<p class="subtle" style="text-align:center;max-width:640px;margin:0 auto;">'
+        "Predict the mood of a song from its audio features using a Random Forest "
+        "machine-learning model. Enter a track's characteristics and instantly see "
+        "whether it feels Happy, Sad, Calm, or Energetic — along with a confidence "
+        "score and rich insights.</p>"
     )
 
     pills = "".join(
         f'<span class="mood-pill" style="border-color:{MOOD_COLORS[m]};'
-        f'box-shadow:0 0 14px {MOOD_COLORS[m]}55;">{m}</span>'
+        f'box-shadow:0 0 16px {MOOD_COLORS[m]}55;color:{MOOD_COLORS[m]};">'
+        f'{MOOD_EMOJI[m]} {m}</span>'
         for m in MOOD_CLASSES
     )
     _card(
@@ -202,12 +356,22 @@ def render_prediction(bundle: Any) -> None:
         return
 
     color = MOOD_COLORS.get(prediction.mood, "#B14BF4")
-    _card(
-        f'<p class="subtle">Predicted mood</p>'
+    emoji = MOOD_EMOJI.get(prediction.mood, "🎵")
+    st.markdown(
+        f'<div class="glass-card result-card" '
+        f'style="border-color:{color}66;box-shadow:0 10px 40px {color}33,'
+        f'inset 0 1px 0 rgba(255,255,255,0.08);">'
+        f'<p class="subtle" style="margin-bottom:2px;">Predicted mood</p>'
         f'<div class="result-mood" style="color:{color};'
-        f'text-shadow:0 0 22px {color}88;">{prediction.mood}</div>'
-        f'<p class="subtle">Confidence: <b>{prediction.confidence:.2f}%</b></p>'
+        f'text-shadow:0 0 26px {color}99;">{emoji}&nbsp;{prediction.mood}</div>'
+        f'<div class="conf-track"><div class="conf-fill" '
+        f'style="width:{prediction.confidence:.1f}%;'
+        f'background:linear-gradient(90deg,{color},#ffffff88);"></div></div>'
+        f'<p class="subtle">Confidence: <b style="color:{color};">'
+        f'{prediction.confidence:.2f}%</b></p>'
         f'<p style="margin-top:10px;">{MOOD_DESCRIPTIONS.get(prediction.mood, "")}</p>'
+        f"</div>",
+        unsafe_allow_html=True,
     )
 
     # Confidence across classes (Req 10-style insight on the prediction).
