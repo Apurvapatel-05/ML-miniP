@@ -219,7 +219,7 @@ Cloud preferred, Render alternative) are in
 
 ## 👤 Author
 
-**Soham** — University ML mini project.
+**Apurva** — University ML mini project.
 Contributions and feedback welcome via issues and pull requests.
 
 ## 📄 License
